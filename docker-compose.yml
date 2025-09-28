@@ -1,0 +1,32 @@
+version: '2'
+services:
+  valkey:
+    image: valkey/valkey:alpine3.20
+  postgres:
+    image: postgres:alpine3.20
+    environment:
+      POSTGRES_USER: rest_api_user
+      POSTGRES_PASSWORD: rest_api_pass
+      POSTGRES_DB: rest_api_db
+  api:
+    build:
+      context: .
+      dockerfile: debian.Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - valkey
+    environment:
+      DATABASE_URL: postgres://rest_api_user:rest_api_pass@postgres/rest_api_db
+      REDIS_URL: redis://valkey:6379
+      SADAS_HOSTNAME: 0.0.0.0
+      SADAS_PORT: 3000
+    # network_mode: host
+    entrypoint: [
+      "/usr/local/bin/wait4x", "postgresql", "postgres://rest_api_user:rest_api_pass@postgres:5432/rest_api_db?sslmode=disable", "--",
+      #      #                  "${DATABASE_URL}"
+      #                  "/usr/local/bin/wait4x", "redis", "valkey", "&&",
+      #      #                  "${REDIS_URL}"
+      "/app/bin/crawlcomply-serve"
+    ]

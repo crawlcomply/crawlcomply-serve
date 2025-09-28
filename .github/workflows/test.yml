@@ -1,0 +1,58 @@
+name: "Test Suite"
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: rustlang/rust:nightly-slim
+    defaults:
+      run:
+        working-directory: ./crawlcomply-backend
+
+    services:
+      postgres:
+        image: postgres:alpine
+        env:
+          POSTGRES_USER: rest_api_user
+          POSTGRES_PASSWORD: rest_api_pass
+          POSTGRES_DB: rest_api_db
+        options: >-
+          --health-cmd "pg_isready --dbname postgres://rest_api_user:rest_api_pass@postgres/rest_api_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      valkey:
+        image: valkey/valkey:alpine
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: 'SamuelMarks/rust-actix-diesel-auth-scaffold'
+          path: 'rust-actix-diesel-auth-scaffold'
+      - uses: actions/checkout@v5
+        with:
+          repository: 'crawlcomply/crawlcomply-backend'
+          path: 'crawlcomply-backend'
+      - uses: actions/checkout@v5
+        with:
+          path: 'crawlcomply-serve'
+      - name: Acquire dependencies
+        run: |
+          apt-get update -qq
+          apt install -y libcom-err2 libffi8 libgmp10 libgnutls30 libgssapi-krb5-2 libhogweed6 libidn2-dev libk5crypto3
+          apt install -y libkeyutils1 libkrb5-3 libnettle8 libp11-kit0 libpq-dev libsasl2-2 libtasn1-6
+      - run: cargo build
+        name: cargo build
+      - run: cargo test
+        name: cargo test
+        env:
+          DATABASE_URL: postgres://rest_api_user:rest_api_pass@postgres/rest_api_db
+          REDIS_URL: redis://valkey:6379
+          RUST_BACKTRACE: full
