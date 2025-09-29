@@ -9,7 +9,7 @@ one directory above to build)
 
 See [src/main.rs](src/main.rs) for current routes.
 OpenAPI docs are available at http://localhost:3000/rapidoc and http://localhost:3000/redoc.
-Also in [openapi.yml](openapi.yml) and [openapi.md](openapi.md).
+Also in [openapi.json](openapi.json).
 
 ## Native usage
 

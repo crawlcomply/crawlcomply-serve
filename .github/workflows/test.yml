@@ -9,7 +9,7 @@ jobs:
     container: rustlang/rust:nightly-slim
     defaults:
       run:
-        working-directory: ./crawlcomply-backend
+        working-directory: ./crawlcomply-serve
 
     services:
       postgres:

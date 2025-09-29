@@ -1,0 +1,1920 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "crawlcomply-serve",
+    "description": "CrawlComply endpoints server",
+    "license": {
+      "name": "Apache-2.0 OR MIT",
+      "identifier": "Apache-2.0 OR MIT"
+    },
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/api": {
+      "get": {
+        "tags": [
+          "version"
+        ],
+        "summary": "Versions of this package and its first-party dependencies",
+        "operationId": "version",
+        "responses": {
+          "200": {
+            "description": "Versions of this package and its first-party dependencies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authorize": {
+      "get": {
+        "operationId": "authorise",
+        "responses": {}
+      }
+    },
+    "/api/token": {
+      "post": {
+        "summary": "Generate a token for a grant flow.\nImplements https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.3",
+        "operationId": "token",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Token created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unauthorized User",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found User",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0/org": {
+      "post": {
+        "tags": [
+          "org"
+        ],
+        "summary": "Upsert `Org`",
+        "operationId": "upsert",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrg"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Org created/updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    },
+    "/api/v0/org/{name}": {
+      "delete": {
+        "tags": [
+          "org"
+        ],
+        "summary": "Delete `Org` by name",
+        "operationId": "remove",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Org name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Org deleted"
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    },
+    "/api/v0/org/{org}/repo": {
+      "post": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "Upsert `Repo`",
+        "operationId": "upsert",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRepo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Repo created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Repo"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    },
+    "/api/v0/org/{org}/repo/{name}": {
+      "delete": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "Delete `Repo` by org & name",
+        "operationId": "remove",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Repo name",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Repo deleted"
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    },
+    "/api/v0/org/{org}/repo/{repo}/history": {
+      "post": {
+        "tags": [
+          "repo_history"
+        ],
+        "summary": "Upsert `RepoHistory`",
+        "operationId": "upsert",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true
+          },
+          {
+            "name": "repo",
+            "in": "path",
+            "description": "Repo name",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRepoHistory"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "RepoHistory created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoHistory"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    },
+    "/api/v0/org/{org}/repo/{repo}/run": {
+      "post": {
+        "tags": [
+          "run_history"
+        ],
+        "summary": "Upsert `RunHistory`",
+        "operationId": "upsert",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true
+          },
+          {
+            "name": "repo",
+            "in": "path",
+            "description": "Repo name",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRunHistory"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "RunHistory created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunHistory"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    },
+    "/api/v0/profile": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Upsert `Profile`",
+        "operationId": "upsert",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProfile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Profile created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Delete `Profile` of current user",
+        "operationId": "remove",
+        "responses": {
+          "204": {
+            "description": "Profile deleted"
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    },
+    "/api/v0_public/org": {
+      "get": {
+        "tags": [
+          "org"
+        ],
+        "summary": "Get all `Org`s",
+        "operationId": "read_many",
+        "responses": {
+          "200": {
+            "description": "`Org`s",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgVecObj"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0_public/org/{name}": {
+      "get": {
+        "tags": [
+          "org"
+        ],
+        "summary": "Get `Org` by name",
+        "operationId": "read",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Org name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Org found from database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Org"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0_public/org/{org}/repo": {
+      "get": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "Get all `Repo`s in given `Org`",
+        "operationId": "read_many",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`Repo`s",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoVecObj"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0_public/org/{org}/repo/{name}": {
+      "get": {
+        "tags": [
+          "repo"
+        ],
+        "summary": "Get `Repo` by org & name",
+        "operationId": "read",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Repo name",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Repo found from database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Repo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0_public/org/{org}/repo/{repo}/history": {
+      "get": {
+        "tags": [
+          "repo_history"
+        ],
+        "summary": "Get `RepoHistory`-ies",
+        "operationId": "read_many",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true
+          },
+          {
+            "name": "repo",
+            "in": "path",
+            "description": "Repo name",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`RepoHistory`-ies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoHistoryVecObj"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0_public/org/{org}/repo/{repo}/history/{hash}": {
+      "get": {
+        "tags": [
+          "repo_history"
+        ],
+        "summary": "Get `RepoHistory` by org & repo & commit",
+        "operationId": "read",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true
+          },
+          {
+            "name": "repo",
+            "in": "path",
+            "description": "Repo name",
+            "required": true
+          },
+          {
+            "name": "hash",
+            "in": "path",
+            "description": "Commit hash",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RepoHistory found from database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoHistory"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0_public/org/{org}/repo/{repo}/run": {
+      "get": {
+        "tags": [
+          "run_history"
+        ],
+        "summary": "Get `RunHistory` by org & repo",
+        "operationId": "read_many",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true
+          },
+          {
+            "name": "repo",
+            "in": "path",
+            "description": "Repo name",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`RunHistory`-ies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunHistoryVecObj"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0_public/org/{org}/repo/{repo}/run/{run}": {
+      "get": {
+        "tags": [
+          "run_history"
+        ],
+        "summary": "Get `RunHistory` by org & repo & run",
+        "operationId": "read",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Org name",
+            "required": true
+          },
+          {
+            "name": "repo",
+            "in": "path",
+            "description": "Repo name",
+            "required": true
+          },
+          {
+            "name": "run",
+            "in": "path",
+            "description": "Run number",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RunHistory found from database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunHistory"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v0_public/profile": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Get `Profile` of current user",
+        "operationId": "read",
+        "responses": {
+          "200": {
+            "description": "Profile found from database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    },
+    "/api/v0_public/profiles": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Get all `Profile`s",
+        "operationId": "read_many",
+        "responses": {
+          "200": {
+            "description": "`Profile`s",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileVecObj"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/secured/logout": {
+      "post": {
+        "summary": "Logout a user (uses provided Bearer token from Header)",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "Empty response"
+          },
+          "500": {
+            "description": "Error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthErrorSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    },
+    "/secured/secret": {
+      "get": {
+        "summary": "Shows secret to authenticated user (uses provided Bearer token from Header)",
+        "operationId": "secret",
+        "responses": {
+          "200": {
+            "description": "secret endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SecretText"
+                },
+                "example": "secret endpoint"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "password": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthErrorSchema": {
+        "type": "object",
+        "required": [
+          "error",
+          "error_message"
+        ],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "error_message": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateOrg": {
+        "type": "object",
+        "description": "Create Struct for a row in table `org` for [`Org`]",
+        "required": [
+          "name",
+          "owner"
+        ],
+        "properties": {
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `avatar_url`"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `description`"
+          },
+          "github_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `github_id`"
+          },
+          "name": {
+            "type": "string",
+            "description": "Field representing column `name`"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Field representing column `owner`"
+          }
+        }
+      },
+      "CreateProfile": {
+        "type": "object",
+        "description": "Create Struct for a row in table `profile` for [`Profile`]",
+        "required": [
+          "alias",
+          "username"
+        ],
+        "properties": {
+          "alias": {
+            "type": "string",
+            "description": "Field representing column `alias`"
+          },
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `avatar_url`"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `description`"
+          },
+          "github_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `github_id`"
+          },
+          "username": {
+            "type": "string",
+            "description": "Field representing column `username`"
+          }
+        }
+      },
+      "CreateRepo": {
+        "type": "object",
+        "description": "Create Struct for a row in table `repo` for [`Repo`]",
+        "required": [
+          "id",
+          "name",
+          "org"
+        ],
+        "properties": {
+          "comments_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `comments_url`"
+          },
+          "default_branch": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `default_branch`"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `description`"
+          },
+          "fork": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Field representing column `fork`"
+          },
+          "full_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `full_name`"
+          },
+          "html_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `html_url`"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Field representing column `id`"
+          },
+          "is_monorepo": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Field representing column `is_monorepo`"
+          },
+          "languages": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "description": "Field representing column `languages`"
+          },
+          "last_commit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `last_commit`"
+          },
+          "name": {
+            "type": "string",
+            "description": "Field representing column `name`"
+          },
+          "node_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `node_id`"
+          },
+          "org": {
+            "type": "string",
+            "description": "Field representing column `org`"
+          },
+          "private": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Field representing column `private`"
+          },
+          "pulls_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `pulls_url`"
+          },
+          "spdx": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `spdx`"
+          },
+          "visibility": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `visibility`"
+          }
+        }
+      },
+      "CreateRepoHistory": {
+        "type": "object",
+        "description": "Create Struct for a row in table `repo_history` for [`RepoHistory`]",
+        "required": [
+          "commit",
+          "full_name"
+        ],
+        "properties": {
+          "commit": {
+            "type": "string",
+            "description": "Field representing column `commit`"
+          },
+          "doc_coverage": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/String",
+                "description": "Field representing column `doc_coverage`"
+              }
+            ]
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Field representing column `full_name`"
+          },
+          "git_branch": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `git_branch`"
+          },
+          "git_tag": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `git_tag`"
+          },
+          "github_pr": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Field representing column `github_pr`"
+          },
+          "hosted_docs_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `hosted_docs_url`"
+          },
+          "id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `id`"
+          },
+          "metrics": {
+            "description": "Field representing column `metrics`"
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `notes`"
+          },
+          "repo_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Field representing column `repo_id`"
+          },
+          "security_scanner": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `security_scanner`"
+          },
+          "test_coverage": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/String",
+                "description": "Field representing column `test_coverage`"
+              }
+            ]
+          }
+        }
+      },
+      "CreateRunHistory": {
+        "type": "object",
+        "description": "Create Struct for a row in table `run_history` for [`RunHistory`]",
+        "required": [
+          "commit",
+          "full_name"
+        ],
+        "properties": {
+          "commit": {
+            "type": "string",
+            "description": "Field representing column `commit`"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Field representing column `full_name`"
+          },
+          "id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `id`"
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `status`"
+          }
+        }
+      },
+      "GrantType": {
+        "type": "string",
+        "enum": [
+          "password",
+          "authorization_code",
+          "client_credentials",
+          "refresh_token"
+        ]
+      },
+      "Org": {
+        "type": "object",
+        "description": "Struct representing a row in table `org`",
+        "required": [
+          "name",
+          "owner",
+          "created_at"
+        ],
+        "properties": {
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `avatar_url`"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Field representing column `created_at`"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `description`"
+          },
+          "github_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `github_id`"
+          },
+          "name": {
+            "type": "string",
+            "description": "Field representing column `name`"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Field representing column `owner`"
+          }
+        }
+      },
+      "OrgVecObj": {
+        "type": "object",
+        "required": [
+          "orgs"
+        ],
+        "properties": {
+          "orgs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Org"
+            }
+          }
+        }
+      },
+      "Profile": {
+        "type": "object",
+        "description": "Struct representing a row in table `profile`",
+        "required": [
+          "alias",
+          "username",
+          "created_at"
+        ],
+        "properties": {
+          "alias": {
+            "type": "string",
+            "description": "Field representing column `alias`"
+          },
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `avatar_url`"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Field representing column `created_at`"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `description`"
+          },
+          "github_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `github_id`"
+          },
+          "username": {
+            "type": "string",
+            "description": "Field representing column `username`"
+          }
+        }
+      },
+      "ProfileVecObj": {
+        "type": "object",
+        "required": [
+          "profiles"
+        ],
+        "properties": {
+          "profiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Profile"
+            }
+          }
+        }
+      },
+      "Repo": {
+        "type": "object",
+        "description": "Struct representing a row in table `repo`",
+        "required": [
+          "id",
+          "name",
+          "org",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "comments_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `comments_url`"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Field representing column `created_at`"
+          },
+          "default_branch": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `default_branch`"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `description`"
+          },
+          "fork": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Field representing column `fork`"
+          },
+          "full_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `full_name`"
+          },
+          "html_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `html_url`"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Field representing column `id`"
+          },
+          "is_monorepo": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Field representing column `is_monorepo`"
+          },
+          "languages": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "description": "Field representing column `languages`"
+          },
+          "last_commit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `last_commit`"
+          },
+          "name": {
+            "type": "string",
+            "description": "Field representing column `name`"
+          },
+          "node_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `node_id`"
+          },
+          "org": {
+            "type": "string",
+            "description": "Field representing column `org`"
+          },
+          "private": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Field representing column `private`"
+          },
+          "pulls_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `pulls_url`"
+          },
+          "spdx": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `spdx`"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Field representing column `updated_at`"
+          },
+          "visibility": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `visibility`"
+          }
+        }
+      },
+      "RepoHistory": {
+        "type": "object",
+        "description": "Struct representing a row in table `repo_history`",
+        "required": [
+          "commit",
+          "full_name",
+          "created_at"
+        ],
+        "properties": {
+          "commit": {
+            "type": "string",
+            "description": "Field representing column `commit`"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Field representing column `created_at`"
+          },
+          "doc_coverage": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/String",
+                "description": "Field representing column `doc_coverage`"
+              }
+            ]
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Field representing column `full_name`"
+          },
+          "git_branch": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `git_branch`"
+          },
+          "git_tag": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `git_tag`"
+          },
+          "github_pr": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Field representing column `github_pr`"
+          },
+          "hosted_docs_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `hosted_docs_url`"
+          },
+          "id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `id`"
+          },
+          "metrics": {
+            "description": "Field representing column `metrics`"
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `notes`"
+          },
+          "repo_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Field representing column `repo_id`"
+          },
+          "security_scanner": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `security_scanner`"
+          },
+          "test_coverage": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/String",
+                "description": "Field representing column `test_coverage`"
+              }
+            ]
+          }
+        }
+      },
+      "RepoHistoryVecObj": {
+        "type": "object",
+        "required": [
+          "repo_histories"
+        ],
+        "properties": {
+          "repo_histories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RepoHistory"
+            }
+          }
+        }
+      },
+      "RepoVecObj": {
+        "type": "object",
+        "required": [
+          "repos"
+        ],
+        "properties": {
+          "repos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Repo"
+            }
+          }
+        }
+      },
+      "RunHistory": {
+        "type": "object",
+        "description": "Struct representing a row in table `run_history`",
+        "required": [
+          "commit",
+          "full_name",
+          "run",
+          "created_at"
+        ],
+        "properties": {
+          "commit": {
+            "type": "string",
+            "description": "Field representing column `commit`"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Field representing column `created_at`"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Field representing column `full_name`"
+          },
+          "id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `id`"
+          },
+          "run": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Field representing column `run`"
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field representing column `status`"
+          }
+        }
+      },
+      "RunHistoryVecObj": {
+        "type": "object",
+        "required": [
+          "runs"
+        ],
+        "properties": {
+          "runs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RunHistory"
+            }
+          }
+        }
+      },
+      "SecretText": {
+        "type": "string"
+      },
+      "String": {
+        "type": "string"
+      },
+      "Token": {
+        "type": "object",
+        "required": [
+          "access_token",
+          "refresh_token",
+          "token_type",
+          "expires_in"
+        ],
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "access token used for entry into protected endpoints",
+            "example": "username0::role1::access_token::1faf9af0-eac5-4066-b00d-e89e4a6b0b2e"
+          },
+          "expires_in": {
+            "type": "integer",
+            "format": "int64",
+            "description": "how long until this token expires (in seconds)",
+            "example": 3600,
+            "minimum": 0
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "access token used for entry into protected endpoints",
+            "example": "username0::role1::refresh_token::1faf9af0-eac5-4066-b00d-e89e4a6b0b2e"
+          },
+          "token_type": {
+            "type": "string",
+            "description": "token type, e.g., Bearer is provided in the Authorization HTTP header",
+            "example": "Bearer"
+          }
+        }
+      },
+      "TokenRequest": {
+        "type": "object",
+        "required": [
+          "grant_type"
+        ],
+        "properties": {
+          "client_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "optional client ID (required, for example, in RFC6749's non password non refresh grant flow)",
+            "example": null
+          },
+          "client_secret": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "optional client secret (as used, e.g., in RFC6749's non (password|refresh) grant flow)",
+            "example": null
+          },
+          "code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "optional code (required, e.g., in datatracker.ietf.org/doc/html/rfc6749#section-4.1.3)",
+            "example": null
+          },
+          "grant_type": {
+            "$ref": "#/components/schemas/GrantType",
+            "description": "RFC6749 grant type"
+          },
+          "password": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "optional password (as used, for example, in RFC6749's password grant flow)",
+            "example": "pass0"
+          },
+          "redirect_uri": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "optional redirect_uri (used, e.g., in datatracker.ietf.org/doc/html/rfc6749#section-4.1.3)",
+            "example": null
+          },
+          "refresh_token": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "optional refresh token (as used, for example, in RFC6749's refresh grant flow)",
+            "example": null
+          },
+          "username": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "optional username (as used, for example, in RFC6749's password grant flow)",
+            "example": "user0"
+          }
+        }
+      },
+      "Version": {
+        "type": "object",
+        "description": "Version record for this package and its first-party dependencies",
+        "required": [
+          "version",
+          "crawlcomply_backend",
+          "radas",
+          "name"
+        ],
+        "properties": {
+          "crawlcomply_backend": {
+            "type": "string",
+            "description": "version of crawlcomply-backend",
+            "example": "0.0.1"
+          },
+          "name": {
+            "type": "string",
+            "description": "name of this package",
+            "example": "crawlcomply-serve"
+          },
+          "radas": {
+            "type": "string",
+            "description": "version of rust-actix-diesel-auth-scaffold",
+            "example": "0.0.3-alpha"
+          },
+          "version": {
+            "type": "string",
+            "description": "version of crawlcomply-serve",
+            "example": "0.0.1"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "crawlcomply-serve",
+      "description": "CrawlComply endpoints server"
+    }
+  ]
+}
