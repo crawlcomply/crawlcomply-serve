@@ -47,7 +47,7 @@ jobs:
         run: |
           apt-get update -qq
           apt install -y libcom-err2 libffi8 libgmp10 libgnutls30 libgssapi-krb5-2 libhogweed6 libidn2-dev libk5crypto3
-          apt install -y libkeyutils1 libkrb5-3 libnettle8 libp11-kit0 libpq-dev libsasl2-2 libtasn1-6
+          apt install -y libkeyutils1 libkrb5-3 libnettle8 libp11-kit0 libpq-dev libsasl2-2 libtasn1-6 curl
       - run: cargo build
         name: cargo build
       - run: cargo test
