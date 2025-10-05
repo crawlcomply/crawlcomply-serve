@@ -27,5 +27,5 @@ services:
       #      #                  "${DATABASE_URL}"
       #                  "/usr/local/bin/wait4x", "redis", "valkey", "&&",
       #      #                  "${REDIS_URL}"
-      "/app/crawlcomply-serve/target/release/crawlcomply-serve"
+      "/app/bin/crawlcomply-serve"
     ]
