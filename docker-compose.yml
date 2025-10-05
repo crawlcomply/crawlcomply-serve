@@ -1,9 +1,8 @@
-version: '2'
 services:
   valkey:
-    image: valkey/valkey:alpine3.20
+    image: valkey/valkey:alpine3.21
   postgres:
-    image: postgres:alpine3.20
+    image: postgres:alpine3.21
     environment:
       POSTGRES_USER: rest_api_user
       POSTGRES_PASSWORD: rest_api_pass
@@ -28,5 +27,5 @@ services:
       #      #                  "${DATABASE_URL}"
       #                  "/usr/local/bin/wait4x", "redis", "valkey", "&&",
       #      #                  "${REDIS_URL}"
-      "/app/bin/crawlcomply-serve"
+      "/app/crawlcomply-serve/target/release/crawlcomply-serve"
     ]
